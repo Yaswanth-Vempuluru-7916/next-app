@@ -23,20 +23,6 @@ const FrequencyChart = ({ selectedMeter, chartType }) => {
         backgroundColor: 'rgba(0, 123, 255, 0.5)',
         fill: chartType === 'area',
       },
-      {
-        label: 'Total KVAR',
-        data: data.Total_KVAR,
-        borderColor: 'rgba(40, 167, 69, 1)',
-        backgroundColor: 'rgba(40, 167, 69, 0.5)',
-        fill: chartType === 'area',
-      },
-      {
-        label: 'Total KVA',
-        data: data.Total_KVA,
-        borderColor: 'rgba(255, 193, 7, 1)',
-        backgroundColor: 'rgba(255, 193, 7, 0.5)',
-        fill: chartType === 'area',
-      },
     ],
   };
 
@@ -47,7 +33,7 @@ const FrequencyChart = ({ selectedMeter, chartType }) => {
       },
       title: {
         display: true,
-        text: `Frequency and Power`,
+        text: 'Frequency',
         font: {
           size: 14,
         },
@@ -64,7 +50,7 @@ const FrequencyChart = ({ selectedMeter, chartType }) => {
       y: {
         title: {
           display: true,
-          text: 'Frequency (Hz) / Power (KVAR, KVA)',
+          text: 'Frequency (Hz)',
         },
       },
     },

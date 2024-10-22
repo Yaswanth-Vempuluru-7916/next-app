@@ -1,38 +1,38 @@
 // components/charts/CurrentChart.js
 import React from 'react';
 import GenericChart from '../GenericChart';
-import useFetchEnergyData from '../../hooks/useFetchEnergyData';
+import useFetchMeterData from '../../hooks/useFetchMeterData';
 import { useRecoilValue } from 'recoil';
 import { shouldFetchDataState } from '../../lib/atoms';
 
 const CurrentChart = ({ selectedMeter, chartType }) => {
   const shouldFetchData = useRecoilValue(shouldFetchDataState);
-  const { data, loading, error } = useFetchEnergyData(selectedMeter, 'current', shouldFetchData);
+  const { data, loading, error } = useFetchMeterData(selectedMeter, shouldFetchData);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!data) return null;
 
   const chartData = {
-    labels: data.time.map((time) => time),
+    labels: data.time,
     datasets: [
       {
-        label: 'Current 1',
-        data: data.current1,
+        label: 'Current C1',
+        data: data.current.c1,
         borderColor: 'rgba(255, 99, 132, 1)',
         backgroundColor: 'rgba(255, 99, 132, 0.5)',
         fill: chartType === 'area',
       },
       {
-        label: 'Current 2',
-        data: data.current2,
+        label: 'Current C2',
+        data: data.current.c2,
         borderColor: 'rgba(75, 192, 192, 1)',
         backgroundColor: 'rgba(75, 192, 192, 0.5)',
         fill: chartType === 'area',
       },
       {
-        label: 'Current 3',
-        data: data.current3,
+        label: 'Current C3',
+        data: data.current.c3,
         borderColor: 'rgba(255, 159, 64, 1)',
         backgroundColor: 'rgba(255, 159, 64, 0.5)',
         fill: chartType === 'area',
@@ -47,7 +47,7 @@ const CurrentChart = ({ selectedMeter, chartType }) => {
       },
       title: {
         display: true,
-        text: `Current`,
+        text: 'Current Measurements',
         font: {
           size: 14,
         },

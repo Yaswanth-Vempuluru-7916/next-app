@@ -1,24 +1,24 @@
 // components/charts/TotalPowerChart.js
 import React from 'react';
 import GenericChart from '../GenericChart';
-import useFetchEnergyData from '../../hooks/useFetchEnergyData';
+import useFetchMeterData from '../../hooks/useFetchMeterData';
 import { useRecoilValue } from 'recoil';
 import { shouldFetchDataState } from '../../lib/atoms';
 
 const TotalPowerChart = ({ selectedMeter, chartType }) => {
   const shouldFetchData = useRecoilValue(shouldFetchDataState);
-  const { data, loading, error } = useFetchEnergyData(selectedMeter, 'total_power', shouldFetchData);
+  const { data, loading, error } = useFetchMeterData(selectedMeter, shouldFetchData);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!data) return null;
 
   const chartData = {
-    labels: data.time.map((time) => time),
+    labels: data.time,
     datasets: [
       {
         label: 'Total Power (KW)',
-        data: data.Total_KW,
+        data: data.power.Total.KW,
         borderColor: 'rgba(54, 162, 235, 1)',
         backgroundColor: 'rgba(54, 162, 235, 0.5)',
         fill: chartType === 'area',
@@ -33,7 +33,7 @@ const TotalPowerChart = ({ selectedMeter, chartType }) => {
       },
       title: {
         display: true,
-        text: `Total Power`,
+        text: 'Total Power',
         font: {
           size: 14,
         },

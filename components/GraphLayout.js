@@ -40,21 +40,21 @@ const GraphLayout = () => {
       metric: "power",
       component: (chartType) => <PowerChart selectedMeter={selectedMeter} chartType={chartType} /> 
     },
-    { 
-      title: "Apparent vs Reactive Power", 
-      metric: "apparent_vs_reactive_power",
-      component: (chartType) => <ApparentReactivePowerChart selectedMeter={selectedMeter} chartType={chartType} /> 
-    },
+    // { 
+    //   title: "Apparent vs Reactive Power", 
+    //   metric: "apparent_vs_reactive_power",
+    //   component: (chartType) => <ApparentReactivePowerChart selectedMeter={selectedMeter} chartType={chartType} /> 
+    // },
     { 
       title: "Total Power", 
       metric: "total_power",
       component: (chartType) => <TotalPowerChart selectedMeter={selectedMeter} chartType={chartType} /> 
     },
-    { 
-      title: "Frequency", 
-      metric: "frequency",
-      component: (chartType) => <FrequencyChart selectedMeter={selectedMeter} chartType={chartType} /> 
-    }
+    // { 
+    //   title: "Frequency", 
+    //   metric: "frequency",
+    //   component: (chartType) => <FrequencyChart selectedMeter={selectedMeter} chartType={chartType} /> 
+    // }
   ];
 
   return (

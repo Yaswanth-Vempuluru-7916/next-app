@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'; 
 import { motion } from 'framer-motion';
 import { useEnergyMeterStates } from '../hooks/useEnergyMeterStates';
 
@@ -6,16 +6,18 @@ const EnergyMeterSidebar = () => {
   const { selectedMeter, setSelectedMeter } = useEnergyMeterStates();
   const energyMeters = [
     { id: 'WR2001000008', name: 'Energy Meter 1' },
-    { id: "WR2009000663", name: 'Energy Meter 2' },
-    { id: "WR2109000129", name: 'Energy Meter 3' },
-    { id: "WR2109000128", name: 'Energy Meter 4' },
+    { id: 'WR2009000663', name: 'Energy Meter 2' },
+    { id: 'WR2109000129', name: 'Energy Meter 3' },
+    { id: 'WR2109000128', name: 'Energy Meter 4' },
     { id: 'WR2109000127', name: 'Energy Meter 6' },
   ];
 
   return (
-    <div className="bg-white h-full">
-      <h2 className="font-bold mb-6 text-gray-800 text-2xl px-6 py-4 border-b border-gray-200 sticky top-0 bg-white z-10">Energy Meters</h2>
-      <ul className="px-4">
+    <div className="bg-white h-full flex flex-col"> {/* Ensure full height */}
+      <h2 className="font-bold mb-6 text-gray-800 text-2xl px-6 py-4 border-b border-gray-200">
+        Energy Meters
+      </h2>
+      <ul className="flex-grow overflow-y-auto px-4"> {/* Flex-grow to take remaining space and allow scrolling */}
         {energyMeters.map((meter) => (
           <motion.li
             key={meter.id}
