@@ -75,7 +75,8 @@ def transform_data(extracted_data):
                         "tx": properties.get("lte_tx"),
                         "bytes": properties.get("lte_bytes")
                     }
-                }
+                },
+                "Frequency": properties.get("Frequency")
             }
         }
         transformed_records.append(transformed_record)

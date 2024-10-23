@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 def map_data_to_array_format(transformed_data):
     mapped_records = []
 
@@ -49,7 +50,7 @@ def map_data_to_array_format(transformed_data):
             properties.get("power", {}).get("KVA", {}).get("L3")
         ]
 
-        # Prepare the mapped record including MAC Address, version, and status
+        # Prepare the mapped record
         mapped_record = {
             "deviceID": properties.get("deviceID"),
             "date": date_str,  # Add the date
@@ -66,11 +67,7 @@ def map_data_to_array_format(transformed_data):
                     "PF": properties.get("power", {}).get("Total", {}).get("PF"),
                     "KW": properties.get("power", {}).get("Total", {}).get("KW"),
                 }
-            },
-            # Add MAC Address, version, and status
-            "macAddress": properties.get("macAddress"),
-            "version": properties.get("version"),
-            "status": properties.get("status")
+            }
         }
 
         mapped_records.append(mapped_record)
