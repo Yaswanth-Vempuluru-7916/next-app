@@ -1,3 +1,4 @@
+// components/DeviceInfo.js
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useEnergyMeterStates } from '../hooks/useEnergyMeterStates';
@@ -39,3 +40,45 @@ const DeviceInfo = () => {
 };
 
 export default DeviceInfo;
+
+// import React from 'react';
+// import { motion } from 'framer-motion';
+
+// const DeviceInfo = ({ meterData }) => {
+//   if (!meterData) return null;
+
+//   // Extract device information from meterData
+//   const deviceInfo = {
+//     deviceID: meterData.device_id || 'N/A',
+//     macAddress: meterData.mac_address || 'N/A',
+//     version: meterData.version || 'N/A',
+//     status: meterData.status || 'normal',
+//   };
+
+//   const infoItems = [
+//     { label: 'Device ID', value: deviceInfo.deviceID },
+//     { label: 'MAC Address', value: deviceInfo.macAddress },
+//     { label: 'Version', value: deviceInfo.version },
+//     { label: 'Status', value: deviceInfo.status, className: deviceInfo.status === 'normal' ? 'text-green-600' : 'text-red-600' },
+//   ];
+
+//   return (
+//     <motion.div
+//       initial={{ opacity: 0, y: 20 }}
+//       animate={{ opacity: 1, y: 0 }}
+//       transition={{ duration: 0.5 }}
+//       className="bg-white shadow-xl rounded-lg p-4"
+//     >
+//       <div className="grid grid-cols-4 gap-2 text-sm">
+//         {infoItems.map((item, index) => (
+//           <div key={index}>
+//             <div className="font-semibold text-gray-700">{item.label}</div>
+//             <div className={`text-gray-800 ${item.className || ''}`}>{item.value}</div>
+//           </div>
+//         ))}
+//       </div>
+//     </motion.div>
+//   );
+// };
+
+// export default DeviceInfo;

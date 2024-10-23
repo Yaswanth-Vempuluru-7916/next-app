@@ -1,100 +1,82 @@
 // components/DateRangeDropdown.js
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { dateRangeState, shouldFetchDataState } from '../lib/atoms';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 const DateRangeDropdown = () => {
-  const [selectedRange, setSelectedRange] = useState('');
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [dateRange, setDateRange] = useRecoilState(dateRangeState);
+  const setShouldFetchData = useSetRecoilState(shouldFetchDataState);
 
-  // Helper function to format date with timezone info
-  const formatDateWithTimezone = (date) => {
-    return new Date(date).toISOString();
+  const formatDate = (date) => {
+    return date.toISOString().split('T')[0];
   };
-
-  useEffect(() => {
-    if (selectedRange === 'Custom Dates' && startDate && endDate) {
-      const formattedStart = formatDateWithTimezone(startDate);
-      const formattedEnd = formatDateWithTimezone(endDate);
-      console.log(`Custom Dates: From ${formattedStart} to ${formattedEnd}`);
-    }
-  }, [startDate, endDate]);
 
   const handleChange = (e) => {
     const range = e.target.value;
-    setSelectedRange(range);
     const now = new Date();
-
-    let formattedStart = null;
-    let formattedEnd = formatDateWithTimezone(now);
+    let startDate = null;
+    let endDate = formatDate(now);
 
     switch (range) {
       case 'Last Hour':
-        const lastHour = new Date(now.getTime() - 60 * 60 * 1000);
-        formattedStart = formatDateWithTimezone(lastHour);
-        console.log(`Last Hour: From ${formattedStart} to ${formattedEnd}`);
+        startDate = formatDate(new Date(now.getTime() - 60 * 60 * 1000));
         break;
-
       case 'Yesterday':
-        const yesterdayStart = new Date(now.setDate(now.getDate() - 1));
-        yesterdayStart.setHours(0, 0, 0, 0);
-        const yesterdayEnd = new Date();
-        yesterdayEnd.setHours(23, 59, 59, 999);
-        formattedStart = formatDateWithTimezone(yesterdayStart);
-        formattedEnd = formatDateWithTimezone(yesterdayEnd);
-        console.log(`Yesterday: From ${formattedStart} to ${formattedEnd}`);
+        const yesterday = new Date(now);
+        yesterday.setDate(yesterday.getDate() - 1);
+        startDate = formatDate(yesterday);
+        endDate = formatDate(yesterday);
         break;
-
       case 'Last Week':
-        const lastMonday = new Date(now.setDate(now.getDate() - now.getDay() - 6)); // Last Monday
-        lastMonday.setHours(0, 0, 0, 0);
-        const lastSunday = new Date(now.setDate(now.getDate() - now.getDay())); // Last Sunday
-        lastSunday.setHours(23, 59, 59, 999);
-        formattedStart = formatDateWithTimezone(lastMonday);
-        formattedEnd = formatDateWithTimezone(lastSunday);
-        console.log(`Last Week: From ${formattedStart} to ${formattedEnd}`);
+        const lastWeekStart = new Date(now);
+        lastWeekStart.setDate(now.getDate() - 7);
+        startDate = formatDate(lastWeekStart);
         break;
-
       case 'This Week':
-        const thisWeekStart = new Date(now.setDate(now.getDate() - now.getDay())); // Start of the current week
-        thisWeekStart.setHours(0, 0, 0, 0);
-        formattedStart = formatDateWithTimezone(thisWeekStart);
-        console.log(`This Week: From ${formattedStart} to ${formattedEnd}`);
+        const thisWeekStart = new Date(now);
+        thisWeekStart.setDate(now.getDate() - now.getDay());
+        startDate = formatDate(thisWeekStart);
         break;
-
       case 'Last Month':
-        const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1); // First day of last month
-        const lastDayLastMonth = new Date(now.getFullYear(), now.getMonth(), 0); // Last day of last month
-        lastDayLastMonth.setHours(23, 59, 59, 999);
-        formattedStart = formatDateWithTimezone(firstDayLastMonth);
-        formattedEnd = formatDateWithTimezone(lastDayLastMonth);
-        console.log(`Last Month: From ${formattedStart} to ${formattedEnd}`);
+        const lastMonth = new Date(now);
+        lastMonth.setMonth(lastMonth.getMonth() - 1);
+        startDate = formatDate(new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1));
+        endDate = formatDate(new Date(lastMonth.getFullYear(), lastMonth.getMonth() + 1, 0));
         break;
-
       case 'This Month':
-        const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1); // First day of the current month
-        formattedStart = formatDateWithTimezone(thisMonthStart);
-        console.log(`This Month: From ${formattedStart} to ${formattedEnd}`);
+        startDate = formatDate(new Date(now.getFullYear(), now.getMonth(), 1));
         break;
-
       case 'Custom Dates':
-        // Custom dates will be handled by useEffect when dates are selected
-        return;
-
-      default:
-        console.log('Select a valid range');
-        return;
+        // Keep existing dates if switching to custom
+        startDate = dateRange.startDate;
+        endDate = dateRange.endDate;
+        break;
     }
+
+    setDateRange({
+      type: range,
+      startDate,
+      endDate,
+    });
+    setShouldFetchData(true);
   };
 
-  const isCustomDateSelected = selectedRange === 'Custom Dates';
+  const handleCustomDateChange = (type, date) => {
+    const formattedDate = date ? formatDate(date) : null;
+    setDateRange(prev => ({
+      ...prev,
+      [type]: formattedDate
+    }));
+    setShouldFetchData(true);
+  };
 
   return (
-    <div className="flex flex-col space-y-4">
+    <div className="flex items-center space-x-4">
       <select
-        className="border border-gray-300 rounded-md p-2 bg-white shadow-sm hover:shadow-lg transition-shadow duration-300 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        value={selectedRange}
+        className="border border-gray-300 rounded-md p-2 bg-white shadow-sm hover:shadow-lg transition-shadow duration-300"
+        value={dateRange.type}
         onChange={handleChange}
       >
         <option value="">Select Date Range</option>
@@ -107,21 +89,21 @@ const DateRangeDropdown = () => {
         <option value="Custom Dates">Custom Dates</option>
       </select>
 
-      {isCustomDateSelected && (
+      {dateRange.type === 'Custom Dates' && (
         <div className="flex space-x-4">
           <DatePicker
-            selected={startDate}
-            onChange={(date) => setStartDate(date)}
-            maxDate={new Date()} // Block future dates
+            selected={dateRange.startDate ? new Date(dateRange.startDate) : null}
+            onChange={(date) => handleCustomDateChange('startDate', date)}
+            maxDate={new Date()}
             placeholderText="Start Date"
-            className="border border-gray-300 rounded-md p-2 bg-white shadow-sm hover:shadow-md transition-shadow duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-gray-300 rounded-md p-2"
           />
           <DatePicker
-            selected={endDate}
-            onChange={(date) => setEndDate(date)}
-            maxDate={new Date()} // Block future dates
+            selected={dateRange.endDate ? new Date(dateRange.endDate) : null}
+            onChange={(date) => handleCustomDateChange('endDate', date)}
+            maxDate={new Date()}
             placeholderText="End Date"
-            className="border border-gray-300 rounded-md p-2 bg-white shadow-sm hover:shadow-md transition-shadow duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-gray-300 rounded-md p-2"
           />
         </div>
       )}

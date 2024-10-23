@@ -1,3 +1,4 @@
+// components/Card.js
 import React from "react";
 import { Maximize2 } from "lucide-react";
 import ChartTypeSelector from "./ChartTypeSelector";
