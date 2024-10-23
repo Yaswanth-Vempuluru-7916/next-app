@@ -1,4 +1,3 @@
-// components/DateRangeDropdown.js
 import React from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { dateRangeState, shouldFetchDataState } from '../lib/atoms';
@@ -21,46 +20,73 @@ const DateRangeDropdown = () => {
 
     switch (range) {
       case 'Last Hour':
-        startDate = formatDate(new Date(now.getTime() - 60 * 60 * 1000));
+        startDate = formatDate(new Date(now.getTime() - 60 * 60 * 1000)); // Last hour
         break;
+
       case 'Yesterday':
         const yesterday = new Date(now);
         yesterday.setDate(yesterday.getDate() - 1);
         startDate = formatDate(yesterday);
-        endDate = formatDate(yesterday);
+        endDate = formatDate(yesterday); // Same for both start and end
         break;
+
       case 'Last Week':
         const lastWeekStart = new Date(now);
-        lastWeekStart.setDate(now.getDate() - 7);
+        const lastWeekEnd = new Date(now);
+        
+        // Move to the previous Sunday (or Saturday based on your locale)
+        lastWeekStart.setDate(now.getDate() - now.getDay() - 7);
+        lastWeekEnd.setDate(lastWeekStart.getDate() + 6); // Set to the following Saturday
+        
         startDate = formatDate(lastWeekStart);
+        endDate = formatDate(lastWeekEnd);
         break;
+
       case 'This Week':
         const thisWeekStart = new Date(now);
-        thisWeekStart.setDate(now.getDate() - now.getDay());
+        const thisWeekEnd = new Date(now);
+        
+        // Move to the start of this week (Monday or Sunday)
+        thisWeekStart.setDate(now.getDate() - now.getDay()); // Sunday
+        // No need to change the end date, it stays as today (now)
+
         startDate = formatDate(thisWeekStart);
+        endDate = formatDate(thisWeekEnd);
         break;
+
       case 'Last Month':
         const lastMonth = new Date(now);
         lastMonth.setMonth(lastMonth.getMonth() - 1);
         startDate = formatDate(new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1));
         endDate = formatDate(new Date(lastMonth.getFullYear(), lastMonth.getMonth() + 1, 0));
         break;
+
       case 'This Month':
         startDate = formatDate(new Date(now.getFullYear(), now.getMonth(), 1));
         break;
+
       case 'Custom Dates':
         // Keep existing dates if switching to custom
         startDate = dateRange.startDate;
         endDate = dateRange.endDate;
         break;
+
+      default:
+        break;
     }
 
+    // Update Recoil state
     setDateRange({
       type: range,
       startDate,
       endDate,
     });
+
+    // Trigger fetch
     setShouldFetchData(true);
+
+    // Log the selected option for debugging
+    console.log(`Selected Option: ${range}, Start Date: ${startDate}, End Date: ${endDate}`);
   };
 
   const handleCustomDateChange = (type, date) => {

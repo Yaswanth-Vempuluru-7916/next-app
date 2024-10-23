@@ -18,7 +18,7 @@ const useFetchMeterData = (selectedMeter) => {
       setLoading(true);
       try {
         const url = `http://127.0.0.1:8000/fetch-and-transform?device_serial_number=${selectedMeter}&target_date=${dateRange.endDate}&max_pages=5`;
-        
+        console.log(`Start  date : ${dateRange.startDate} && End  date : ${dateRange.endDate}`);
         console.log('Fetching data from API:', url);
         
         const response = await fetch(url);
