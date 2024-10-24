@@ -1,5 +1,3 @@
-// hooks/useFetchMeterData.js
-
 import { useState, useEffect } from 'react';
 import { useRecoilValue, useResetRecoilState } from 'recoil';
 import { shouldFetchDataState, dateRangeState } from '../lib/atoms';
@@ -41,8 +39,8 @@ const mapDataToGraphStructure = (response) => {
       Frequency: response.threshold_values.Frequency,
     },
     mappedData: {
-      date:[],
-      time:[],
+      date: [],
+      time: [],
       timestamps: [],
       voltage: {
         V1: [],
@@ -78,9 +76,9 @@ const mapDataToGraphStructure = (response) => {
   // Iterate over each data point in the mapped_data array
   response.mapped_data.forEach((dataPoint) => {
     // Extract timestamp
-    structuredData.timestamps.push(dataPoint.timestamp);
-    structuredData.date.push(dataPoint.date);
-    structuredData.time.push(dataPoint.time);
+    structuredData.mappedData.timestamps.push(dataPoint.timestamp);
+    structuredData.mappedData.date.push(dataPoint.date);
+    structuredData.mappedData.time.push(dataPoint.time);
 
     // Map voltage
     structuredData.mappedData.voltage.V1.push(dataPoint.voltage.V1);
@@ -144,23 +142,37 @@ const useFetchMeterData = (selectedMeter) => {
       setLoading(true);
       try {
         const url = `http://localhost:8000/fetch-and-transform?device_serial_number=${selectedMeter}&start_date=${dateRange.startDate}&end_date=${dateRange.endDate}&max_pages=15`;
-        console.log(`Start date: ${dateRange.startDate} && End date: ${dateRange.endDate}`);
-        console.log('Fetching data from API:', url);
+        console.log('Fetching data with params:', {
+          selectedMeter,
+          startDate: dateRange.startDate,
+          endDate: dateRange.endDate
+        });
 
         const response = await fetch(url);
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const result = await response.json();
+        console.log('Raw API Response:', result);
+
+        if (!result.mapped_data || !Array.isArray(result.mapped_data)) {
+          throw new Error('Invalid data format received from API');
+        }
 
         // Map the result to the desired structure
         const structuredData = mapDataToGraphStructure(result);
-        console.log(`Structured data : ${structuredData}`);
+        console.log('Structured Data:', structuredData);
+
+        // Validate the structured data before setting it
+        if (!structuredData.mappedData || !structuredData.mappedData.timestamps) {
+          throw new Error('Data transformation failed');
+        }
 
         // Set the structured data
         setData(structuredData);
       } catch (err) {
+        console.error('Error fetching data:', err);
         setError(err.message);
       } finally {
         setLoading(false);

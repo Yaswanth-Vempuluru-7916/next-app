@@ -1,4 +1,3 @@
-// components/charts/ApparentReactivePowerChart.js
 import React from 'react';
 import GenericChart from '../GenericChart';
 import useFetchMeterData from '../../hooks/useFetchMeterData';
@@ -13,51 +12,72 @@ const ApparentReactivePowerChart = ({ selectedMeter, chartType }) => {
   if (error) return <div>Error: {error}</div>;
   if (!data) return null;
 
+  // Extract threshold values for power
+  const { thresholdValues } = data;
+  const powerThresholds = thresholdValues.power;
+
   const chartData = {
-    labels: data.time,
+    labels: data.mappedData.time,
     datasets: [
+      // Apparent Power (KVA)
       {
         label: 'KVA L1',
-        data: data.apparent.KVA.L1,
+        data: data.mappedData.power.KVA.L1,
         borderColor: 'rgba(0, 123, 255, 1)',
         backgroundColor: 'rgba(0, 123, 255, 0.5)',
         fill: chartType === 'area',
       },
       {
         label: 'KVA L2',
-        data: data.apparent.KVA.L2,
+        data: data.mappedData.power.KVA.L2,
         borderColor: 'rgba(40, 167, 69, 1)',
         backgroundColor: 'rgba(40, 167, 69, 0.5)',
         fill: chartType === 'area',
       },
       {
         label: 'KVA L3',
-        data: data.apparent.KVA.L3,
+        data: data.mappedData.power.KVA.L3,
         borderColor: 'rgba(255, 193, 7, 1)',
         backgroundColor: 'rgba(255, 193, 7, 0.5)',
         fill: chartType === 'area',
       },
+      // Reactive Power (KVAR)
       {
-        label: 'KVAR L1',
-        data: data.reactive.KVAR.L1,
+        label: 'Kvar L1',
+        data: data.mappedData.power.Kvar.L1,
         borderColor: 'rgba(220, 53, 69, 1)',
         backgroundColor: 'rgba(220, 53, 69, 0.5)',
         fill: chartType === 'area',
       },
       {
-        label: 'KVAR L2',
-        data: data.reactive.KVAR.L2,
+        label: 'Kvar L2',
+        data: data.mappedData.power.Kvar.L2,
         borderColor: 'rgba(23, 162, 184, 1)',
         backgroundColor: 'rgba(23, 162, 184, 0.5)',
         fill: chartType === 'area',
       },
       {
-        label: 'KVAR L3',
-        data: data.reactive.KVAR.L3,
+        label: 'Kvar L3',
+        data: data.mappedData.power.Kvar.L3,
         borderColor: 'rgba(108, 117, 125, 1)',
         backgroundColor: 'rgba(108, 117, 125, 0.5)',
         fill: chartType === 'area',
       },
+      // Thresholds
+      {
+        label: 'KVA Threshold',
+        data: new Array(data.mappedData.time.length).fill(powerThresholds.KVA),
+        borderColor: 'rgba(255, 0, 0, 0.5)',
+        borderDash: [5, 5],
+        fill: false,
+      },
+      {
+        label: 'Kvar Threshold',
+        data: new Array(data.mappedData.time.length).fill(powerThresholds.Kvar),
+        borderColor: 'rgba(0, 0, 255, 0.5)',
+        borderDash: [5, 5],
+        fill: false,
+      }
     ],
   };
 
@@ -85,7 +105,7 @@ const ApparentReactivePowerChart = ({ selectedMeter, chartType }) => {
       y: {
         title: {
           display: true,
-          text: 'Power (KVA/KVAR)',
+          text: 'Power (KVA/Kvar)',
         },
       },
     },

@@ -1,4 +1,3 @@
-// components/charts/TotalPowerChart.js
 import React from 'react';
 import GenericChart from '../GenericChart';
 import useFetchMeterData from '../../hooks/useFetchMeterData';
@@ -13,16 +12,27 @@ const TotalPowerChart = ({ selectedMeter, chartType }) => {
   if (error) return <div>Error: {error}</div>;
   if (!data) return null;
 
+  // Extract threshold values for power
+  const { thresholdValues } = data;
+  const powerThresholds = thresholdValues.power;
+
   const chartData = {
-    labels: data.time,
+    labels: data.mappedData.time,
     datasets: [
       {
         label: 'Total Power (KW)',
-        data: data.power.Total.KW,
+        data: data.mappedData.power.Total.KW,
         borderColor: 'rgba(54, 162, 235, 1)',
         backgroundColor: 'rgba(54, 162, 235, 0.5)',
         fill: chartType === 'area',
       },
+      {
+        label: 'KW Threshold',
+        data: new Array(data.mappedData.time.length).fill(powerThresholds.KW),
+        borderColor: 'rgba(255, 0, 0, 0.5)',
+        borderDash: [5, 5],
+        fill: false,
+      }
     ],
   };
 

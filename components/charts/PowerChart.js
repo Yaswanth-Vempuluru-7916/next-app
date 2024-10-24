@@ -1,4 +1,3 @@
-// components/charts/PowerChart.js
 import React from 'react';
 import GenericChart from '../GenericChart';
 import useFetchMeterData from '../../hooks/useFetchMeterData';
@@ -13,30 +12,41 @@ const PowerChart = ({ selectedMeter, chartType }) => {
   if (error) return <div>Error: {error}</div>;
   if (!data) return null;
 
+  // Extract threshold values for power
+  const { thresholdValues } = data;
+  const powerThresholds = thresholdValues.power;
+
   const chartData = {
-    labels: data.time,
+    labels: data.mappedData.time,
     datasets: [
       {
-        label: 'Power P1',
-        data: data.power.KW.p1,
+        label: 'Power L1',
+        data: data.mappedData.power.KW.L1,
         borderColor: 'rgba(128, 0, 128, 1)',
         backgroundColor: 'rgba(128, 0, 128, 0.3)',
         fill: chartType === 'area',
       },
       {
-        label: 'Power P2',
-        data: data.power.KW.p2,
+        label: 'Power L2',
+        data: data.mappedData.power.KW.L2,
         borderColor: 'rgba(0, 128, 128, 1)',
         backgroundColor: 'rgba(0, 128, 128, 0.3)',
         fill: chartType === 'area',
       },
       {
-        label: 'Power P3',
-        data: data.power.KW.p3,
+        label: 'Power L3',
+        data: data.mappedData.power.KW.L3,
         borderColor: 'rgba(255, 69, 0, 1)',
         backgroundColor: 'rgba(255, 69, 0, 0.3)',
         fill: chartType === 'area',
       },
+      {
+        label: 'KW Threshold',
+        data: new Array(data.mappedData.time.length).fill(powerThresholds.KW),
+        borderColor: 'rgba(255, 0, 0, 0.5)',
+        borderDash: [5, 5],
+        fill: false,
+      }
     ],
   };
 
@@ -47,7 +57,7 @@ const PowerChart = ({ selectedMeter, chartType }) => {
       },
       title: {
         display: true,
-        text: `Power`,
+        text: 'Power',
         font: {
           size: 14,
         },
