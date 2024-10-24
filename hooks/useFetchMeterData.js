@@ -124,6 +124,40 @@ const mapDataToGraphStructure = (response) => {
     structuredData.mappedData.network.Frequency.push(dataPoint.network.Frequency);
   });
 
+  // Reverse the mapped data arrays to be in chronological order
+  structuredData.mappedData.date.reverse();
+  structuredData.mappedData.time.reverse();
+  structuredData.mappedData.timestamps.reverse();
+  structuredData.mappedData.voltage.V1.reverse();
+  structuredData.mappedData.voltage.V2.reverse();
+  structuredData.mappedData.voltage.V3.reverse();
+  structuredData.mappedData.current.I1.reverse();
+  structuredData.mappedData.current.I2.reverse();
+  structuredData.mappedData.current.I3.reverse();
+  structuredData.mappedData.power.KW.L1.reverse();
+  structuredData.mappedData.power.KW.L2.reverse();
+  structuredData.mappedData.power.KW.L3.reverse();
+  structuredData.mappedData.power.Kvar.L1.reverse();
+  structuredData.mappedData.power.Kvar.L2.reverse();
+  structuredData.mappedData.power.Kvar.L3.reverse();
+  structuredData.mappedData.power.KVA.L1.reverse();
+  structuredData.mappedData.power.KVA.L2.reverse();
+  structuredData.mappedData.power.KVA.L3.reverse();
+  structuredData.mappedData.power.PF.L1.reverse();
+  structuredData.mappedData.power.PF.L2.reverse();
+  structuredData.mappedData.power.PF.L3.reverse();
+  structuredData.mappedData.power.Total.KW.reverse();
+  structuredData.mappedData.power.Total.Kvar.reverse();
+  structuredData.mappedData.power.Total.KVA.reverse();
+  structuredData.mappedData.power.Total.PF.reverse();
+  structuredData.mappedData.energy.KwhImport.reverse();
+  structuredData.mappedData.energy.KVAhImport.reverse();
+  structuredData.mappedData.network.act.reverse();
+  structuredData.mappedData.network.rssi.reverse();
+  structuredData.mappedData.network.rsrp.reverse();
+  structuredData.mappedData.network.rsrq.reverse();
+  structuredData.mappedData.network.Frequency.reverse();
+
   return structuredData;
 };
 
@@ -145,7 +179,7 @@ const useFetchMeterData = (selectedMeter) => {
         console.log('Fetching data with params:', {
           selectedMeter,
           startDate: dateRange.startDate,
-          endDate: dateRange.endDate
+          endDate: dateRange.endDate,
         });
 
         const response = await fetch(url);
@@ -173,14 +207,14 @@ const useFetchMeterData = (selectedMeter) => {
         setData(structuredData);
       } catch (err) {
         console.error('Error fetching data:', err);
-        setError(err.message);
+        setError(err);
       } finally {
         setLoading(false);
         resetShouldFetchData();
       }
     };
 
-    if (selectedMeter && (shouldFetchData || data === null)) {
+    if (shouldFetchData) {
       fetchData();
     }
   }, [selectedMeter, dateRange, shouldFetchData, resetShouldFetchData]);

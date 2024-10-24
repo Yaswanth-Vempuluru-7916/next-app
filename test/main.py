@@ -21,6 +21,11 @@ app.add_middleware(
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Suppress 'httpx' logging at INFO level (set it to WARNING)
+httpx_logger = logging.getLogger("httpx")
+httpx_logger.setLevel(logging.WARNING)
+
+# Load scaling factors
 scaling_factors = load_scaling_factors('calibration.json')
 
 # Static threshold values for energy meters
@@ -69,6 +74,9 @@ class ResponseModel(BaseModel):
 @app.get("/fetch-and-transform", response_model=ResponseModel)
 async def fetch_and_transform(device_serial_number: str, start_date: str, end_date: str, max_pages: int = 50):
     try:
+        # Log the message for the date range
+        logger.info(f"Fetching data from the backend for the dates {start_date} to {end_date}")
+
         # Fetch data which now includes device_info once and mapped_data for multiple timestamps
         extracted_data = await fetch_data(device_serial_number, start_date, end_date, max_pages)
 

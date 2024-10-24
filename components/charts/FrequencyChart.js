@@ -13,8 +13,8 @@ const FrequencyChart = ({ selectedMeter, chartType }) => {
   if (!data) return null;
 
   // Extract threshold values for frequency
-  const { threshold_values } = data;
-  const frequencyThreshold = threshold_values.Frequency;
+  const { thresholdValues } = data;
+  const frequencyThreshold = thresholdValues.Frequency;
 
   const chartData = {
     labels: data.mappedData.time,
