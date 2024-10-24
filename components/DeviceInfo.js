@@ -1,27 +1,19 @@
-// components/DeviceInfo.js
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useEnergyMeterStates } from '../hooks/useEnergyMeterStates';
-import useFetchMeterData from '@/hooks/useFetchMeterData';
+import { useRecoilValue } from 'recoil';
+import { meterDataState } from '../lib/atoms';
 
 const DeviceInfo = () => {
-  const { selectedMeter } = useEnergyMeterStates();
-  const { data: deviceData, loading, error } = useFetchMeterData(selectedMeter, '2024-10-21', 5); // Example values for targetDate and maxPages
+  const deviceData = useRecoilValue(meterDataState);
 
-  if (loading) return <div className="text-center">Loading...</div>;
-  if (error) return <div className="text-red-600 text-center">Error: {error}</div>;
   if (!deviceData) return <div className="text-center">No device selected.</div>;
 
   // Displaying device information from fetched data
   const infoItems = [
     { label: 'Device ID', value: deviceData.deviceInfo.deviceID },
-    // { label: 'Device Name', value: deviceData.deviceInfo.deviceName },
-    // { label: 'Model Name', value: deviceData.deviceInfo.modelName },
     { label: 'MAC Address', value: deviceData.deviceInfo.macAddress },
     { label: 'Version', value: deviceData.deviceInfo.version },
-    // { label: 'IP Address', value: deviceData.deviceInfo.IPADD },
     { label: 'Status', value: deviceData.deviceInfo.status, className: deviceData.deviceInfo.status === 'normal' ? 'text-green-600' : 'text-red-600' },
-    // { label: 'Source Site Name', value: deviceData.deviceInfo.sourceSitename },
   ];
 
   return (
@@ -44,5 +36,3 @@ const DeviceInfo = () => {
 };
 
 export default DeviceInfo;
-
-

@@ -1,4 +1,3 @@
-// components/GraphLayout.js
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Card from './Card';
@@ -10,9 +9,12 @@ import TotalPowerChart from './charts/TotalPowerChart';
 import { useEnergyMeterStates } from '../hooks/useEnergyMeterStates';
 import ApparentReactivePowerChart from './charts/ApparentReactivePowerChart';
 import FrequencyChart from './charts/FrequencyChart';
+import { useRecoilValue } from 'recoil';
+import { meterDataState } from '../lib/atoms';
 
-const GraphLayout = ({ meterData }) => {
+const GraphLayout = () => {
   const { selectedMeter, graphConfig, setGraphConfig, fullScreenCard, setFullScreenCard } = useEnergyMeterStates();
+  const meterData = useRecoilValue(meterDataState);
 
   const changeChartType = (metric, newType) => {
     setGraphConfig({

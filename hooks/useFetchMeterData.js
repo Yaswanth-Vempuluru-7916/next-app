@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useRecoilValue, useResetRecoilState } from 'recoil';
-import { shouldFetchDataState, dateRangeState } from '../lib/atoms';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { shouldFetchDataState, dateRangeState, meterDataState } from '../lib/atoms';
 
 // Function to map the response to the desired structure
 const mapDataToGraphStructure = (response) => {
@@ -160,65 +160,53 @@ const mapDataToGraphStructure = (response) => {
 
   return structuredData;
 };
-
 const useFetchMeterData = (selectedMeter) => {
-  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const shouldFetchData = useRecoilValue(shouldFetchDataState);
   const dateRange = useRecoilValue(dateRangeState);
-  const resetShouldFetchData = useResetRecoilState(shouldFetchDataState);
+  const setMeterData = useSetRecoilState(meterDataState);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!dateRange.endDate) return;
+      if (!dateRange.endDate || !selectedMeter) return;
 
       setLoading(true);
       try {
         const url = `http://localhost:8000/fetch-and-transform?device_serial_number=${selectedMeter}&start_date=${dateRange.startDate}&end_date=${dateRange.endDate}&max_pages=15`;
-        console.log('Fetching data with params:', {
-          selectedMeter,
-          startDate: dateRange.startDate,
-          endDate: dateRange.endDate,
-        });
-
+        
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const result = await response.json();
-        console.log('Raw API Response:', result);
 
         if (!result.mapped_data || !Array.isArray(result.mapped_data)) {
           throw new Error('Invalid data format received from API');
         }
 
-        // Map the result to the desired structure
         const structuredData = mapDataToGraphStructure(result);
-        console.log('Structured Data:', structuredData);
 
-        // Validate the structured data before setting it
         if (!structuredData.mappedData || !structuredData.mappedData.timestamps) {
           throw new Error('Data transformation failed');
         }
 
-        // Set the structured data
-        setData(structuredData);
+        setMeterData(structuredData);
       } catch (err) {
         console.error('Error fetching data:', err);
         setError(err);
       } finally {
         setLoading(false);
-        resetShouldFetchData();
       }
     };
 
     if (shouldFetchData) {
       fetchData();
     }
-  }, [selectedMeter, dateRange, shouldFetchData, resetShouldFetchData]);
+  }, [selectedMeter, dateRange, shouldFetchData, setMeterData]);
 
+  const data = useRecoilValue(meterDataState);
   return { data, loading, error };
 };
 
