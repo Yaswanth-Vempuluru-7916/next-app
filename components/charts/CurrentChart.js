@@ -1,15 +1,7 @@
 import React from 'react';
 import GenericChart from '../GenericChart';
-import useFetchMeterData from '../../hooks/useFetchMeterData';
-import { useRecoilValue } from 'recoil';
-import { shouldFetchDataState } from '../../lib/atoms';
 
-const CurrentChart = ({ selectedMeter, chartType }) => {
-  const shouldFetchData = useRecoilValue(shouldFetchDataState);
-  const { data, loading, error } = useFetchMeterData(selectedMeter, shouldFetchData);
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+const CurrentChart = ({ chartType, data }) => {
   if (!data) return null;
 
   // Extract threshold values for current
